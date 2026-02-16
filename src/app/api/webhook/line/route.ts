@@ -30,9 +30,17 @@ export async function POST(request: Request) {
             encoder.encode(body)
         );
 
-        // Convert buffer to base64 string
-        const signatureArray = Array.from(new Uint8Array(signatureBuffer));
-        const expectedSignature = btoa(String.fromCharCode(...signatureArray));
+        // Convert buffer to base64 string (Edge Runtime compatible)
+        const bytes = new Uint8Array(signatureBuffer);
+        let binary = '';
+        for (let i = 0; i < bytes.length; i++) {
+            binary += String.fromCharCode(bytes[i]);
+        }
+        const expectedSignature = btoa(binary);
+
+        console.log('Signature from LINE:', signature);
+        console.log('Expected signature:', expectedSignature);
+        console.log('Signatures match:', signature === expectedSignature);
 
         if (signature !== expectedSignature) {
             console.error('Invalid Signature');
