@@ -11,7 +11,7 @@ export async function POST(request: Request) {
         const { to, subject, html } = await request.json();
 
         const { data, error } = await resend.emails.send({
-            from: 'onboarding@resend.dev',
+            from: 'noreply@karadanoarekore.com',
             to: to, // 'delivered@resend.dev' for sandbox if not verified
             subject: subject,
             html: html,

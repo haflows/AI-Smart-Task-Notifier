@@ -195,7 +195,7 @@ async function processUserDigest(userId: string, supabaseClient: any) {
 
     // 5. Send Email
     const { data: emailData, error: emailError } = await resend.emails.send({
-        from: 'onboarding@resend.dev',
+        from: 'noreply@karadanoarekore.com',
         to: email, // Use the fetched email
         subject: digest.subject,
         html: digest.html_body,
