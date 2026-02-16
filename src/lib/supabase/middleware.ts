@@ -3,12 +3,27 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function updateSession(request: NextRequest) {
+    // DEBUG: Check for environment variables
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
+        return new NextResponse(
+            JSON.stringify({
+                error: 'CRITICAL ERROR: NEXT_PUBLIC_SUPABASE_URL is missing in runtime environment.',
+                env_check: {
+                    has_url: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
+                    has_key: !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+                    node_env: process.env.NODE_ENV
+                }
+            }),
+            { status: 500, headers: { 'content-type': 'application/json' } }
+        );
+    }
+
     let supabaseResponse = NextResponse.next({
         request,
     })
 
     const supabase = createServerClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_URL,
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
         {
             cookies: {
