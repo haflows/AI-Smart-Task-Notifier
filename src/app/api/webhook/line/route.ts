@@ -34,27 +34,18 @@ export async function POST(request: Request) {
         const data = JSON.parse(body);
         const events = data.events;
 
-        console.log('Received events:', events);
-
         // 3. Process Events
         for (const event of events) {
-            console.log('Processing event:', event.type);
             if (event.type === 'message' && event.message.type === 'text') {
                 const userId = event.source.userId;
                 const replyToken = event.replyToken;
                 const userMessage = event.message.text;
 
-                console.log('User message:', userMessage);
-                console.log('User ID:', userId);
-                console.log('Reply token:', replyToken);
-
                 // Simple Echo Logic for ID
                 if (userMessage.toLowerCase().includes('id') || userMessage.includes('ＩＤ')) {
-                    console.log('Sending ID response');
                     await replyToLine(replyToken, `あなたのUser IDは:\n${userId}\nです！`, channelAccessToken);
                 } else {
                     // Optional: Echo back everything or just ignore
-                    console.log('Sending default response');
                     await replyToLine(replyToken, `IDを知りたい場合は「ID」と送ってください。\n(Your ID: ${userId})`, channelAccessToken);
                 }
             }
