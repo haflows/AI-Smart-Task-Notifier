@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
+import * as crypto from 'crypto';
 
-export const runtime = 'edge'; // Optional: Explicitly mark as edge
+// export const runtime = 'edge'; // Remove Edge Runtime to use Node.js crypto
 
 export async function POST(request: Request) {
     try {
@@ -15,28 +16,10 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: 'Configuration Error' }, { status: 500 });
         }
 
-        const encoder = new TextEncoder();
-        const key = await crypto.subtle.importKey(
-            'raw',
-            encoder.encode(channelSecret),
-            { name: 'HMAC', hash: 'SHA-256' },
-            false,
-            ['sign']
-        );
-
-        const signatureBuffer = await crypto.subtle.sign(
-            'HMAC',
-            key,
-            encoder.encode(body)
-        );
-
-        // Convert buffer to base64 string (Edge Runtime compatible)
-        const bytes = new Uint8Array(signatureBuffer);
-        let binary = '';
-        for (let i = 0; i < bytes.length; i++) {
-            binary += String.fromCharCode(bytes[i]);
-        }
-        const expectedSignature = btoa(binary);
+        const expectedSignature = crypto
+            .createHmac('SHA256', channelSecret)
+            .update(body)
+            .digest('base64');
 
         console.log('Signature from LINE:', signature);
         console.log('Expected signature:', expectedSignature);
@@ -64,18 +47,15 @@ export async function POST(request: Request) {
                 console.log('User message:', userMessage);
                 console.log('User ID:', userId);
                 console.log('Reply token:', replyToken);
-                console.log('Channel access token exists:', !!channelAccessToken);
 
                 // Simple Echo Logic for ID
-                if (userMessage.includes('ID') || userMessage.includes('id') || userMessage.includes('ＩＤ')) {
+                if (userMessage.toLowerCase().includes('id') || userMessage.includes('ＩＤ')) {
                     console.log('Sending ID response');
-                    const response = await replyToLine(replyToken, `あなたのUser IDは:\n${userId}\nです！`, channelAccessToken);
-                    console.log('Reply response:', response);
+                    await replyToLine(replyToken, `あなたのUser IDは:\n${userId}\nです！`, channelAccessToken);
                 } else {
                     // Optional: Echo back everything or just ignore
                     console.log('Sending default response');
-                    const response = await replyToLine(replyToken, `IDを知りたい場合は「ID」と送ってください。\n(Your ID: ${userId})`, channelAccessToken);
-                    console.log('Reply response:', response);
+                    await replyToLine(replyToken, `IDを知りたい場合は「ID」と送ってください。\n(Your ID: ${userId})`, channelAccessToken);
                 }
             }
         }
