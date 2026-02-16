@@ -105,21 +105,21 @@ export default function TaskList({ tasks, onTaskUpdated }: { tasks: Task[], onTa
                                     type="text"
                                     value={editTitle}
                                     onChange={(e) => setEditTitle(e.target.value)}
-                                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border"
+                                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border text-gray-900 bg-white"
                                     placeholder="タイトル"
                                 />
                                 <textarea
                                     value={editDetail}
                                     onChange={(e) => setEditDetail(e.target.value)}
                                     rows={2}
-                                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border"
+                                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border text-gray-900 bg-white"
                                     placeholder="詳細"
                                 />
                                 <div className="flex gap-2">
                                     <select
                                         value={editPriority}
                                         onChange={(e) => setEditPriority(e.target.value as any)}
-                                        className="block w-1/3 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border"
+                                        className="block w-1/3 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border text-gray-900 bg-white"
                                     >
                                         <option value="High">高</option>
                                         <option value="Medium">中</option>
@@ -129,7 +129,7 @@ export default function TaskList({ tasks, onTaskUpdated }: { tasks: Task[], onTa
                                         type="datetime-local"
                                         value={editDueDate}
                                         onChange={(e) => setEditDueDate(e.target.value)}
-                                        className="block w-2/3 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border"
+                                        className="block w-2/3 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border text-gray-900 bg-white"
                                     />
                                 </div>
                                 <div className="flex justify-end gap-2 mt-2">
