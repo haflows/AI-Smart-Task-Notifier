@@ -9,14 +9,12 @@ export async function POST(request: Request) {
         const channelSecret = process.env.LINE_CHANNEL_SECRET;
         const channelAccessToken = process.env.LINE_CHANNEL_ACCESS_TOKEN;
 
-        // 1. Signature Verification (TEMPORARILY DISABLED FOR DEBUGGING)
+        // 1. Signature Verification
         if (!channelSecret || !signature) {
             console.error('Missing Channel Secret or Signature');
-            // return NextResponse.json({ error: 'Configuration Error' }, { status: 500 });
+            return NextResponse.json({ error: 'Configuration Error' }, { status: 500 });
         }
 
-        // TEMPORARILY SKIP SIGNATURE VERIFICATION
-        /*
         const encoder = new TextEncoder();
         const key = await crypto.subtle.importKey(
             'raw',
@@ -40,7 +38,6 @@ export async function POST(request: Request) {
             console.error('Invalid Signature');
             return NextResponse.json({ error: 'Invalid Signature' }, { status: 401 });
         }
-        */
 
         // 2. Parse Events
         const data = JSON.parse(body);
