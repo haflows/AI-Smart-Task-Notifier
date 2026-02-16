@@ -68,14 +68,14 @@ export async function POST(request: Request) {
     }
 }
 
-async function replyToLine(replyToken: string, text: string, listAccessToken: string | undefined) {
-    if (!listAccessToken) return;
+async function replyToLine(replyToken: string, text: string, channelAccessToken: string | undefined) {
+    if (!channelAccessToken) return;
 
     await fetch('https://api.line.me/v2/bot/message/reply', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${listAccessToken}`,
+            'Authorization': `Bearer ${channelAccessToken}`,
         },
         body: JSON.stringify({
             replyToken: replyToken,
