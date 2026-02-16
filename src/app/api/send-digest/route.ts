@@ -169,15 +169,29 @@ async function processUserDigest(userId: string, supabaseClient: any) {
         `- [${t.priority}] ${t.title} (Due: ${t.due_date ? t.due_date : 'None'})`
     ).join('\n');
 
+    // Get user name for personalization
+    let userName = 'ユーザー';
+    if (userId) {
+        // Try to get name from Auth User Metadata first
+        const { data: { user } } = await supabaseClient.auth.getUser();
+        if (user && user.id === userId && user.user_metadata?.full_name) {
+            userName = user.user_metadata.full_name;
+        } else if (user && user.id === userId && user.user_metadata?.name) {
+            userName = user.user_metadata.name;
+        }
+    }
+
     const prompt = `
     You are an excellent executive secretary.
-    Create a daily briefing email.
-
+    Create a daily briefing email for ${userName}様.
+    
     [Task List]
     ${taskListText}
 
     [Requirements]
-    - Subject: Brief & Encouraging (Japanese)
+    - Subject: Brief & Encouraging (Japanese, include "${userName}様")
+    - Body: HTML format. Start with "Run: ${userName}様, process..." style greeting if appropriate, or standard Japanese business greeting "${userName}様、おはようございます". Highlight critical tasks.
+    - line_message: Short plain text for chat (max 400 chars). Start with "${userName}様".
     - Body: HTML format. Highlight critical tasks.
     - line_message: Short plain text for chat (max 400 chars).
     
