@@ -103,10 +103,13 @@ export default function DigestTest() {
 
 
             <div className="mt-4 pt-4 border-t border-purple-200">
-                <h4 className="text-sm font-bold text-purple-900 mb-2">自動実行 (簡易スケジューラー)</h4>
+                <h4 className="text-sm font-bold text-purple-900 mb-2">自動実行 (Vercel Cron)</h4>
                 <p className="text-xs text-gray-600 mb-2">
-                    このページを開いている間、毎日 09:00 に自動通知します。
-                    (サーバーレス環境では <a href="https://cron-job.org" target="_blank" className="underline text-blue-600">cron-job.org</a> 等から <code>/api/send-digest</code> をGETで叩いてください)
+                    Vercelの本番環境にデプロイされている場合、毎日 <strong>15:00 (JST)</strong> に自動で通知が送信されます。
+                    <br />
+                    (ローカル環境やPCがスリープ中の場合は実行されません)
+                    <br />
+                    手動実行テスト: <a href="https://cron-job.org" target="_blank" className="underline text-blue-600">cron-job.org</a> 等から <code>/api/send-digest?mode=batch</code> を叩いてください
                 </p>
                 <button
                     onClick={async () => {
