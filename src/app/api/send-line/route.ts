@@ -1,16 +1,21 @@
-
+// export const runtime = 'edge'; // Switch to Node.js for better stability
 import { NextResponse } from 'next/server';
-
-export const runtime = 'edge';
 
 export async function POST(request: Request) {
     try {
-        const { message } = await request.json();
+        const body = await request.json();
+        const { message, to } = body; // Accept 'to' (userId) from body
         const token = process.env.LINE_CHANNEL_ACCESS_TOKEN;
-        const userId = process.env.LINE_USER_ID;
 
-        if (!token || !userId) {
-            return NextResponse.json({ error: 'LINE credentials not configured' }, { status: 500 });
+        // Use provided userId or fallback to Env Var
+        const targetUserId = to || process.env.LINE_USER_ID;
+
+        if (!token) {
+            return NextResponse.json({ error: 'LINE_CHANNEL_ACCESS_TOKEN is missing in server environment' }, { status: 500 });
+        }
+
+        if (!targetUserId) {
+            return NextResponse.json({ error: 'User ID is missing. Provide it in body or set LINE_USER_ID env var.' }, { status: 400 });
         }
 
         const response = await fetch('https://api.line.me/v2/bot/message/push', {
@@ -20,7 +25,7 @@ export async function POST(request: Request) {
                 'Authorization': `Bearer ${token}`,
             },
             body: JSON.stringify({
-                to: userId,
+                to: targetUserId,
                 messages: [
                     {
                         type: 'text',

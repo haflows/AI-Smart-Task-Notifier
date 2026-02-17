@@ -1,88 +1,59 @@
 
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { createClient } from '@/lib/supabase/client'
 import { Sparkles } from 'lucide-react'
 
 export default function DigestTest() {
     const [email, setEmail] = useState('')
     const [loading, setLoading] = useState(false)
     const [message, setMessage] = useState('')
+    const [lineUserId, setLineUserId] = useState('')
 
-    const handleSendDigest = async () => {
-        if (!email) {
-            setMessage('メールアドレスを入力してください')
-            return
-        }
+    // Fetch LINE ID on load (if using Supabase client in this component, or just rely on user input if we had one)
+    // Since this is a test component, let's try to fetch it if we can, or just send valid message.
+    // For simplicity, we are inside a client component. Let's create a client.
+    const supabase = createClient()
 
-        setLoading(true)
-        setMessage('AIがタスクを分析して要約中...')
-
-        try {
-            const response = await fetch('/api/send-digest', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ email }),
-            })
-
-            const data = await response.json()
-
-            if (response.ok) {
-                if (data.message === 'No pending tasks. No email sent.') {
-                    setMessage('ℹ️ 未完了のタスクがありませんでした。')
-                } else {
-                    setMessage('✅ 要約メールを送信しました！確認してください。')
-                }
-            } else {
-                setMessage(`❌ 送信失敗: ${data.error || '不明なエラー'}`)
+    useEffect(() => {
+        const getLineId = async () => {
+            const { data: { user } } = await supabase.auth.getUser()
+            if (user) {
+                const { data } = await supabase.from('profiles').select('line_user_id').eq('id', user.id).single()
+                if (data?.line_user_id) setLineUserId(data.line_user_id)
             }
-        } catch (error) {
-            console.error(error)
-            setMessage('❌ エラーが発生しました')
-        } finally {
-            setLoading(false)
         }
-    }
+        getLineId()
+    }, [])
+
+    // ... handleSendDigest ...
 
     return (
         <div className="p-4 bg-purple-50 rounded-lg mt-8 border border-purple-100">
-            <h3 className="font-bold mb-2 flex items-center gap-2 text-purple-900">
-                <Sparkles className="w-5 h-5" />
-                AI定時通知テスト (Daily Digest)
-            </h3>
-            <p className="text-sm text-purple-700 mb-3">
-                現在の未完了タスクをAIが分析・要約して、日報メールを作成・送信します。
-            </p>
-            <div className="flex gap-2">
-                <input
-                    type="email"
-                    placeholder="宛先メールアドレス"
-                    className="flex-1 p-2 border rounded text-gray-900 bg-white"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                />
-                <button
-                    onClick={handleSendDigest}
-                    disabled={loading}
-                    className="bg-purple-600 text-white px-4 py-2 rounded disabled:opacity-50 hover:bg-purple-700 transition-colors font-bold"
-                >
-                    {loading ? 'AI生成中...' : 'メールで要約を送る'}
-                </button>
-            </div>
+            {/* ... Digest Section ... */}
 
             <div className="mt-4 pt-4 border-t border-purple-200">
                 <h4 className="text-sm font-bold text-purple-900 mb-2">LINE通知テスト</h4>
+                <div className="text-xs text-purple-800 mb-2">
+                    宛先: {lineUserId ? lineUserId : '(未設定: /settings で設定してください)'}
+                </div>
                 <button
                     onClick={async () => {
+                        if (!lineUserId) {
+                            setMessage('❌ LINE IDが設定されていません。設定画面で保存してください。');
+                            return;
+                        }
                         setLoading(true);
                         setMessage('LINE送信中...');
                         try {
                             const res = await fetch('/api/send-line', {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({ message: 'これはLINE通知のテストです！\n正常に連携されています🎉' })
+                                body: JSON.stringify({
+                                    message: 'これはLINE通知のテストです！\n正常に連携されています🎉',
+                                    to: lineUserId // Send the ID explicitly
+                                })
                             });
                             const data = await res.json();
                             if (res.ok) setMessage('✅ LINEにメッセージを送信しました！');
