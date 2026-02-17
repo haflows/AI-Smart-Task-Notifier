@@ -5,7 +5,7 @@ import { Resend } from 'resend';
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 
-export const runtime = 'edge';
+// export const runtime = 'edge'; // Switch to Node.js for better error handling and stability
 
 // Initialize Clients
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
