@@ -76,7 +76,7 @@ export default function DigestTest() {
             <div className="mt-4 pt-4 border-t border-purple-200">
                 <h4 className="text-sm font-bold text-purple-900 mb-2">自動実行 (Vercel Cron)</h4>
                 <p className="text-xs text-gray-600 mb-2">
-                    Vercelの本番環境にデプロイされている場合、毎日 <strong>15:00 (JST)</strong> に自動で通知が送信されます。
+                    Vercelの本番環境にデプロイされている場合、毎日 <strong>18:30 (JST)</strong> に自動で通知が送信されます。
                     <br />
                     (ローカル環境やPCがスリープ中の場合は実行されません)
                     <br />
